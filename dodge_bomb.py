@@ -83,9 +83,12 @@ def main():
             vx *= -1
         if not tate:
             vy *= -1
+        #配列を保存する
+        bb_lst=[]
         for r in range(1, 11):
             bb_img = pg.Surface((20*r, 20*r))
             pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+            bb_lst.append(bb_img)
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1

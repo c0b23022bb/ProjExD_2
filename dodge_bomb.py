@@ -27,11 +27,26 @@ def check_bound(rct: pg.Rect) -> tuple[bool,bool]:
     if rct.top < 0 or HEIGHT < rct.bottom:
         tate = False
     return yoko,tate
+def init_kk1_img():
+    kk_img0 = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
+    kk_img = pg.transform.flip(kk_img0, True, False)
+    return {
+        (0,0):kk_img,
+        (5,0):kk_img,
+        (5,-5):pg.transform.rotozoom(kk_img, 45, 1.0),
+        (0,-5):pg.transform.rotozoom(kk_img, 90, 1.0),
+        (-5,-5):pg.transform.rotozoom(kk_img0,-45,1.0),
+        (-5,0):kk_img0,
+        (-5,5):pg.transform.rotozoom(kk_img0, 45, 1.0),
+        (0,5):pg.transform.rotozoom(kk_img, -90, 1.0),
+        (5,5):pg.transform.rotozoom(kk_img, -45, 1.0)
+    }
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
+    kk_imgs = init_kk1_img()
     kk_rct = kk_img.get_rect()
     kk_rct.center = 900, 400
     bb_img = pg.Surface((20,20))
@@ -40,6 +55,7 @@ def main():
     bb_rct = bb_img.get_rect()
     bb_rct.center = random.randint(0,WIDTH),random.randint(0,HEIGHT)
     vx,vy = 5,5
+    accs = [a for a in range(1, 11)]
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -59,6 +75,7 @@ def main():
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
+        kk_img = kk_imgs[tuple(sum_mv)]
         screen.blit(kk_img, kk_rct)
         bb_rct.move_ip(vx,vy)
         yoko,tate = check_bound(bb_rct)
@@ -66,6 +83,9 @@ def main():
             vx *= -1
         if not tate:
             vy *= -1
+        for r in range(1, 11):
+            bb_img = pg.Surface((20*r, 20*r))
+            pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1
